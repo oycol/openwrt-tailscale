@@ -1,6 +1,7 @@
 name: Release
 on:
   push:
+    tags:
 
 jobs:
   release:
@@ -11,8 +12,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cat <<-EOF | tee /tmp/release-note.txt
-          test1
-          EOF
-          tar --owner=0 --group=0 --transform 's/.*\///g' -czvf openwrt-tailscale-mipsle.tar.gz  etc/ usr/
-          hub release create -a "openwrt-tailscale-mipsle.tar.gz" -F /tmp/release-note.txt --draft 2.0.2
+          tag="${GITHUB_REF##*/}"
+          echo "${tag}" >  /tmp/release-note.txt
+          tar --owner=0 --group=0 -czvf openwrt-tailscale-mipsle.tar.gz  etc/ usr/
+          hub release create -a "openwrt-tailscale-mipsle.tar.gz" -F /tmp/release-note.txt --draft "${tag}"
